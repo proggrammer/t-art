@@ -21,15 +21,18 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Main {
-    public static int MAX_NUM_OF_CIRCLES = 500;
+    public static int MAX_NUM_OF_CIRCLES = 5000;
 
     public static void main(String[] args) {
-        String jpgPath = "/Users/kapil.rajak/development/t-art/t-art/src/main/resources/shampoo1.jpg";//input
-        String svgPath = "/Users/kapil.rajak/development/t-art/t-art/src/main/resources/shampoo1.jpg";//svg output
+        String jpgPath = "/Users/kapil.rajak/development/t-art/src/main/resources/phone-bhoot-main.jpg";//input
+        String svgPath = "/Users/kapil.rajak/development/t-art/src/main/resources/phone-bhoot-main.svg";//svg output
         /* write svg */
-        Point2D wh = new Point2D(0,0);
-        List<Circle> reducedResult = circleCompute(wh, jpgPath);
-        writeSVG(svgPath, reducedResult, wh.x, wh.y);
+        boolean updateSVG = false;
+        Point2D wh = new Point2D(0, 0);
+        if(updateSVG) {
+            List<Circle> reducedResult = circleCompute(wh, jpgPath);
+            writeSVG(svgPath, reducedResult, wh.x, wh.y);
+        }
 
         /* music */
         new Thread(() -> {
@@ -86,7 +89,8 @@ public class Main {
                     pixels[i][j] = isWhite(bufferedImage.getRGB(i, j));
                 }
             }
-            point2D = new Point2D(width, height);
+            point2D.x = width;
+            point2D.y = height;
             System.out.println("b:"+black+", w:"+white);
             long sTime = System.currentTimeMillis();
             List<Circle> circlesAtEachWhitePoint = getMaxCircleAtEachWhitePoint(pixels);
@@ -112,7 +116,7 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Successfully wrote to the file.");
+        System.out.println("Successfully wrote to the svg file.");
     }
 
     private static List<Circle> reducedResultFinal(List<Circle> circleList, boolean[][] pixels) {
@@ -186,7 +190,7 @@ public class Main {
             eightWaySymmetricPlot(xc,yc,x,y, resultListPoints);
         }
 
-        return resultListPoints.stream().filter(p -> withinBoundary(p, width, height)).collect(Collectors.toSet()).stream().toList();
+        return resultListPoints.stream().filter(p -> withinBoundary(p, width, height)).collect(Collectors.toSet()).stream().collect(Collectors.toList());
     }
 
     private static boolean withinBoundary(Point2D p, int width, int height) {
@@ -207,7 +211,7 @@ public class Main {
     static int black=0,white=0;
     private static boolean isWhite(int rgb) {
         Color color = new Color(rgb);
-        boolean boo = (color.getRed() + color.getGreen() + color.getBlue())/3 > 255.0/2.0;
+        boolean boo = (color.getRed() + color.getGreen() + color.getBlue())/3 < 255.0/2.0;
         if(!boo) black++;
         else white++;
         return boo;

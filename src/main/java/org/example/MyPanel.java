@@ -23,8 +23,8 @@ public class MyPanel extends JPanel implements ActionListener {
         PANEL_WIDTH = allowed;
         PANEL_HEIGHT = allowed*h/w;
         this.setPreferredSize(new Dimension(PANEL_WIDTH,PANEL_HEIGHT));
-        this.setBackground(Color.black);
-        timer = new Timer(1, this);
+        this.setBackground(Color.WHITE);
+        timer = new Timer(4, this);
         timer.start();
     }
 
@@ -33,17 +33,17 @@ public class MyPanel extends JPanel implements ActionListener {
         super.paint(g); // paint background
 
         Graphics2D g2D = (Graphics2D) g;
-        g2D.setColor(Color.BLUE);
+        g2D.setColor(Color.black);
         drawCircles(g2D, circles);
-        g2D.drawString(circleIndex+" circles drawn.", 100, 100);
+        g2D.drawString(circleIndex+" circles drawn (T-art).", 100, 100);
     }
 
     private void drawCircles(Graphics2D g2D, java.util.List<Circle> circles) {
-        g2D.setColor(Color.BLUE);
+        g2D.setColor(Color.black);
         IntStream.range(0, circleIndex).forEach(i -> drawDisc(g2D, circles.get(i)));
         g2D.setColor(Color.YELLOW);
         drawDisc(g2D, presentCircle);
-        g2D.setColor(Color.BLUE);
+        g2D.setColor(Color.black);
     }
 
     private void drawDisc(Graphics2D g2D, Circle c) {
