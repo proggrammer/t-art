@@ -7,4 +7,13 @@ public class Circle {
         this.y = y;
         this.r = r;
     }
+    public int getX()   {
+        return this.x;
+    }
+    public int getY()   {
+        return this.y;
+    }
+    public int getR()   {
+        return this.r;
+    }
 }

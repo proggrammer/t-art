@@ -21,11 +21,12 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Main {
-    public static int MAX_NUM_OF_CIRCLES = 5000;
+    public static int MAX_NUM_OF_CIRCLES = 20000;
 
     public static void main(String[] args) {
-        String jpgPath = "/Users/kapil.rajak/development/t-art/src/main/resources/phone-bhoot-main.jpg";//input
-        String svgPath = "/Users/kapil.rajak/development/t-art/src/main/resources/phone-bhoot-main.svg";//svg output
+        String fileName="sxcRaw";
+        String jpgPath = "/Users/kapil.rajak/development/t-art/src/main/resources/"+fileName+".jpg";//input
+        String svgPath = "/Users/kapil.rajak/development/t-art/src/main/resources/"+fileName+".svg";//svg output
         /* write svg */
         boolean updateSVG = false;
         Point2D wh = new Point2D(0, 0);
@@ -122,15 +123,17 @@ public class Main {
     private static List<Circle> reducedResultFinal(List<Circle> circleList, boolean[][] pixels) {
         List<Circle> finalResult = new ArrayList<>();
         System.out.println("Reduction Started");
-        while(!circleList.isEmpty() && finalResult.size()<MAX_NUM_OF_CIRCLES) {
-            Circle maxC = circleList.stream().max(Comparator.comparingInt(c -> c.r)).get();
+        while(!circleList.isEmpty()) {
+            Circle maxC = circleList.parallelStream().max(Comparator.comparingInt(c -> c.r)).get();
+            if(maxC.r <=0 )
+                break;
             finalResult.add(maxC);
-            List<Circle> notConnectedCircles = circleList.stream().filter(c -> !(maxC.x == c.x && maxC.y == c.y) && !interSectingCircle(c, maxC)).collect(Collectors.toList());
-            List<Circle> connectedCircles = circleList.stream().filter(c -> !(maxC.x == c.x && maxC.y == c.y) && interSectingCircle(c, maxC)).collect(Collectors.toList());
-            List<Circle> recomputedCircles = connectedCircles.stream().map(c -> maxCircleCalc(c.x, c.y, pixels, finalResult)).collect(Collectors.toList());
-            circleList = Stream.concat(notConnectedCircles.stream(), recomputedCircles.stream()).collect(Collectors.toList());
+            List<Circle> notConnectedCircles = circleList.parallelStream().filter(c -> !(maxC.x == c.x && maxC.y == c.y) && !interSectingCircle(c, maxC)).collect(Collectors.toList());
+            List<Circle> connectedCircles = circleList.parallelStream().filter(c -> !(maxC.x == c.x && maxC.y == c.y) && interSectingCircle(c, maxC)).collect(Collectors.toList());
+            List<Circle> recomputedCircles = connectedCircles.parallelStream().map(c -> maxCircleCalc(c.x, c.y, pixels, finalResult)).collect(Collectors.toList());
+            circleList = Stream.concat(notConnectedCircles.stream(), recomputedCircles.stream()).parallel().filter(c -> c.r>=2).collect(Collectors.toList());
             if(finalResult.size()%50==0)
-                System.out.print(finalResult.size()+" ");
+                System.out.print(finalResult.size()+"("+maxC.x+","+maxC.y+","+maxC.r+") ");
         }
         return finalResult;
     }
